@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/@sap/fsm-sdk/dist/fsm-sdk.min.js"></script>
+</head>
+
+<body>
+
+<div id="content">Loading...</div>
+
+<script>
+    FSM.onReady(function () {
+
+        FSM.getContext().then(function (context) {
+
+            const equipment = context.object;
+
+            const spcStatus = equipment?.udf?.SPC_STATUS;
+            const equipmentCode = equipment?.code;
+
+            const container = document.getElementById("content");
+
+            if (!spcStatus) {
+                container.innerHTML = "⚠️ Equipment not available in SPC system";
+                return;
+            }
+
+            if (spcStatus == 6 || spcStatus == 7) {
+
+                const url = "https://spareparts.andritz.com/#/;
+
+                container.innerHTML =
+                    "<a href='" + url + "' target='_blank'>Open SPC System</a>";
+                return;
+            }
+
+            container.innerHTML = "❌ SPC access is not allowed for current status";
+
+        });
+
+    });
+</script>
+
+</body>
+</html>

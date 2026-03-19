@@ -1,72 +1,49 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>SPC Extension</title>
-
-    <!-- ✅ Correct FSM SDK -->
-    <script src="https://unpkg.com/@sap/fsm-sdk/dist/fsm-sdk.min.js"></script>
-</head>
-
-<body>
-
-<h2>✅ Extension Loaded (HTML Working)</h2>
-
-<div id="content">❌ JS not running</div>
-
 <script>
     const container = document.getElementById("content");
 
-    // ✅ JS check
-    container.innerHTML = "✅ JavaScript is running";
+    container.innerHTML = "✅ JavaScript running<br>";
 
-    // Check FSM
-    if (typeof FSM === "undefined") {
-        container.innerHTML += "<br>❌ FSM SDK NOT loaded";
-    } else {
-        container.innerHTML += "<br>✅ FSM SDK Loaded";
-    }
+    // FSM sends data via postMessage
+    window.addEventListener("message", function (event) {
 
-    // FSM Ready
-    FSM.onReady(function () {
+        container.innerHTML += "✅ Message received from FSM<br>";
 
-        container.innerHTML += "<br>✅ FSM.onReady triggered";
+        const data = event.data;
 
-        FSM.getContext().then(function (context) {
+        console.log("FSM Data:", data);
 
-            container.innerHTML += "<br>✅ Context Loaded";
+        if (!data || !data.object) {
+            container.innerHTML += "❌ No object data received<br>";
+            return;
+        }
 
-            const equipment = context.object || {};
-            const udf = equipment.udf || {};
+        const equipment = data.object;
+        const udf = equipment.udf || {};
 
-            const spcStatus = udf.SPC_STATUS; // adjust if needed
-            const equipmentCode = equipment.code;
+        const spcStatus = udf.SPC_STATUS; // adjust if needed
+        const equipmentCode = equipment.code;
 
-            container.innerHTML += "<br>SPC Status: " + spcStatus;
-            container.innerHTML += "<br>Equipment Code: " + equipmentCode;
+        container.innerHTML += "📌 SPC Status: " + spcStatus + "<br>";
+        container.innerHTML += "📌 Equipment Code: " + equipmentCode + "<br>";
 
-            if (!spcStatus) {
-                container.innerHTML += "<br>⚠️ Equipment not available";
-                return;
-            }
+        // ⚠️ EMPTY
+        if (!spcStatus) {
+            container.innerHTML += "<br>⚠️ Equipment not available";
+            return;
+        }
 
-            if (spcStatus == 6 || spcStatus == 7 || spcStatus == "6" || spcStatus == "7") {
-                const url = "https://spc.company.com/equipment?eq=" + equipmentCode;
+        // ✅ ALLOWED
+        if (spcStatus == 6 || spcStatus == 7 || spcStatus == "6" || spcStatus == "7") {
 
-                container.innerHTML += "<br>✅ SPC Allowed";
-                container.innerHTML += "<br><a href='" + url + "' target='_blank'>🔗 Open SPC</a>";
-                return;
-            }
+            const url = "https://spc.company.com/equipment?eq=" + equipmentCode;
 
-            container.innerHTML += "<br>❌ Access not allowed";
+            container.innerHTML += "<br>✅ SPC Access Allowed<br>";
+            container.innerHTML += "<a href='" + url + "' target='_blank'>🔗 Open SPC</a>";
+            return;
+        }
 
-        }).catch(function (err) {
-            container.innerHTML += "<br>❌ Context error";
-            console.error(err);
-        });
+        // ❌ NOT ALLOWED
+        container.innerHTML += "<br>❌ SPC access not allowed";
 
     });
 </script>
-
-</body>
-</html>

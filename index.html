@@ -1,46 +1,40 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <script src="https://cdn.jsdelivr.net/npm/@sap/fsm-sdk/dist/fsm-sdk.min.js"></script>
-</head>
-
-<body>
-
-<div id="content">Loading...</div>
-
 <script>
     FSM.onReady(function () {
 
+        console.log("FSM Loaded");
+
         FSM.getContext().then(function (context) {
 
-            const equipment = context.object;
+            console.log("Context:", context);
 
-            const spcStatus = equipment?.udf?.SPC_STATUS;
-            const equipmentCode = equipment?.code;
+            const equipment = context.object || {};
+            const udf = equipment.udf || {};
+
+            const spcStatus = udf.SPC_STATUS;
+            const equipmentCode = equipment.code;
 
             const container = document.getElementById("content");
 
+            console.log("SPC Status:", spcStatus);
+            console.log("Equipment Code:", equipmentCode);
+
             if (!spcStatus) {
-                container.innerHTML = "⚠️ Equipment not available in SPC system";
+                container.innerHTML = "<p style='color:orange;'>⚠️ Equipment not available</p>";
                 return;
             }
 
             if (spcStatus == 6 || spcStatus == 7) {
+                const url = "https://spc.company.com/equipment?eq=" + equipmentCode;
 
-                const url = "https://spareparts.andritz.com/#/;
-
-                container.innerHTML =
-                    "<a href='" + url + "' target='_blank'>Open SPC System</a>";
+                container.innerHTML = "<a href='" + url + "' target='_blank'>🔗 Open SPC</a>";
                 return;
             }
 
-            container.innerHTML = "❌ SPC access is not allowed for current status";
+            container.innerHTML = "<p style='color:red;'>❌ Access not allowed</p>";
 
+        }).catch(function (err) {
+            console.error("Context Error:", err);
         });
 
     });
 </script>
-
-</body>
-</html>

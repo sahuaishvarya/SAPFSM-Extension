@@ -1,62 +1,8 @@
-<script>
-    const container = document.getElementById("content");
+<!DOCTYPE html>
+<html>
+<body>
 
-    // 🔍 STEP 1: JS Loaded
-    container.innerHTML = "✅ JavaScript Loaded<br>";
+<h1 style="color:green;">✅ EXTENSION IS LOADING</h1>
 
-    // Check if FSM exists
-    if (typeof FSM === "undefined") {
-        container.innerHTML += "❌ FSM SDK NOT loaded<br>";
-    } else {
-        container.innerHTML += "✅ FSM SDK Found<br>";
-    }
-
-    FSM.onReady(function () {
-
-        // 🔍 STEP 2: FSM Ready
-        container.innerHTML += "✅ FSM.onReady triggered<br>";
-
-        FSM.getContext().then(function (context) {
-
-            // 🔍 STEP 3: Context Loaded
-            container.innerHTML += "✅ Context Loaded<br>";
-
-            const equipment = context.object || {};
-            const udf = equipment.udf || {};
-
-            const spcStatus = udf.SPC_STATUS;
-            const equipmentCode = equipment.code;
-
-            // 🔍 STEP 4: Show values
-            container.innerHTML += "📌 SPC Status: " + spcStatus + "<br>";
-            container.innerHTML += "📌 Equipment Code: " + equipmentCode + "<br>";
-
-            // ⚠️ CASE 1: EMPTY
-            if (!spcStatus) {
-                container.innerHTML += "<br><span style='color:orange;'>⚠️ Equipment not available</span>";
-                return;
-            }
-
-            // ✅ CASE 2: STATUS 6 or 7
-            if (spcStatus == 6 || spcStatus == 7 || spcStatus == "6" || spcStatus == "7") {
-
-                const url = "https://spc.company.com/equipment?eq=" + equipmentCode;
-
-                container.innerHTML += "<br><span style='color:green;'>✅ SPC Access Allowed</span><br>";
-                container.innerHTML += "<a href='" + url + "' target='_blank'>🔗 Open SPC</a>";
-
-                return;
-            }
-
-            // ❌ CASE 3: OTHER
-            container.innerHTML += "<br><span style='color:red;'>❌ Access not allowed</span>";
-
-        }).catch(function (err) {
-
-            container.innerHTML += "<br><span style='color:red;'>❌ Context Error</span>";
-            console.error("Context Error:", err);
-
-        });
-
-    });
-</script>
+</body>
+</html>

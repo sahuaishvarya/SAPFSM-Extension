@@ -1,8 +1,72 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <title>SPC Extension</title>
+
+    <!-- ✅ Correct FSM SDK -->
+    <script src="https://unpkg.com/@sap/fsm-sdk/dist/fsm-sdk.min.js"></script>
+</head>
+
 <body>
 
-<h1 style="color:green;">✅ EXTENSION IS LOADING</h1>
+<h2>✅ Extension Loaded (HTML Working)</h2>
+
+<div id="content">❌ JS not running</div>
+
+<script>
+    const container = document.getElementById("content");
+
+    // ✅ JS check
+    container.innerHTML = "✅ JavaScript is running";
+
+    // Check FSM
+    if (typeof FSM === "undefined") {
+        container.innerHTML += "<br>❌ FSM SDK NOT loaded";
+    } else {
+        container.innerHTML += "<br>✅ FSM SDK Loaded";
+    }
+
+    // FSM Ready
+    FSM.onReady(function () {
+
+        container.innerHTML += "<br>✅ FSM.onReady triggered";
+
+        FSM.getContext().then(function (context) {
+
+            container.innerHTML += "<br>✅ Context Loaded";
+
+            const equipment = context.object || {};
+            const udf = equipment.udf || {};
+
+            const spcStatus = udf.SPC_STATUS; // adjust if needed
+            const equipmentCode = equipment.code;
+
+            container.innerHTML += "<br>SPC Status: " + spcStatus;
+            container.innerHTML += "<br>Equipment Code: " + equipmentCode;
+
+            if (!spcStatus) {
+                container.innerHTML += "<br>⚠️ Equipment not available";
+                return;
+            }
+
+            if (spcStatus == 6 || spcStatus == 7 || spcStatus == "6" || spcStatus == "7") {
+                const url = "https://spc.company.com/equipment?eq=" + equipmentCode;
+
+                container.innerHTML += "<br>✅ SPC Allowed";
+                container.innerHTML += "<br><a href='" + url + "' target='_blank'>🔗 Open SPC</a>";
+                return;
+            }
+
+            container.innerHTML += "<br>❌ Access not allowed";
+
+        }).catch(function (err) {
+            container.innerHTML += "<br>❌ Context error";
+            console.error(err);
+        });
+
+    });
+</script>
 
 </body>
 </html>

@@ -1,13 +1,25 @@
 <script>
-    document.getElementById("content").innerHTML = "✅ JavaScript is running";
+    const container = document.getElementById("content");
+
+    // 🔍 STEP 1: JS Loaded
+    container.innerHTML = "✅ JavaScript Loaded<br>";
+
+    // Check if FSM exists
+    if (typeof FSM === "undefined") {
+        container.innerHTML += "❌ FSM SDK NOT loaded<br>";
+    } else {
+        container.innerHTML += "✅ FSM SDK Found<br>";
+    }
 
     FSM.onReady(function () {
 
-        console.log("FSM Loaded");
+        // 🔍 STEP 2: FSM Ready
+        container.innerHTML += "✅ FSM.onReady triggered<br>";
 
         FSM.getContext().then(function (context) {
 
-            console.log("Context:", context);
+            // 🔍 STEP 3: Context Loaded
+            container.innerHTML += "✅ Context Loaded<br>";
 
             const equipment = context.object || {};
             const udf = equipment.udf || {};
@@ -15,27 +27,35 @@
             const spcStatus = udf.SPC_STATUS;
             const equipmentCode = equipment.code;
 
-            const container = document.getElementById("content");
+            // 🔍 STEP 4: Show values
+            container.innerHTML += "📌 SPC Status: " + spcStatus + "<br>";
+            container.innerHTML += "📌 Equipment Code: " + equipmentCode + "<br>";
 
-            console.log("SPC Status:", spcStatus);
-            console.log("Equipment Code:", equipmentCode);
-
+            // ⚠️ CASE 1: EMPTY
             if (!spcStatus) {
-                container.innerHTML = "<p style='color:orange;'>⚠️ Equipment not available</p>";
+                container.innerHTML += "<br><span style='color:orange;'>⚠️ Equipment not available</span>";
                 return;
             }
 
-            if (spcStatus == 6 || spcStatus == 7) {
+            // ✅ CASE 2: STATUS 6 or 7
+            if (spcStatus == 6 || spcStatus == 7 || spcStatus == "6" || spcStatus == "7") {
+
                 const url = "https://spc.company.com/equipment?eq=" + equipmentCode;
 
-                container.innerHTML = "<a href='" + url + "' target='_blank'>🔗 Open SPC</a>";
+                container.innerHTML += "<br><span style='color:green;'>✅ SPC Access Allowed</span><br>";
+                container.innerHTML += "<a href='" + url + "' target='_blank'>🔗 Open SPC</a>";
+
                 return;
             }
 
-            container.innerHTML = "<p style='color:red;'>❌ Access not allowed</p>";
+            // ❌ CASE 3: OTHER
+            container.innerHTML += "<br><span style='color:red;'>❌ Access not allowed</span>";
 
         }).catch(function (err) {
+
+            container.innerHTML += "<br><span style='color:red;'>❌ Context Error</span>";
             console.error("Context Error:", err);
+
         });
 
     });
